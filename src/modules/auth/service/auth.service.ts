@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   NotAcceptableException,
+  UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -19,18 +20,19 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<Usuario> {
-    return await this.usuarioService
-      .findUserByUsername(username)
-      .then((user) => {
-        if (!user) return null;
-        const passwordValid = bcrypt.compare(password, user.password);
-        if (!user) {
-          throw new NotAcceptableException('Could not find the user');
-        }
-        if (user && passwordValid) {
-          return user;
-        }
-      });
+    try {
+      const user = await this.usuarioService.findUserByUsername(username);
+      if (!user) {
+        throw new NotAcceptableException('User not found');
+      }
+      const passwordValid = await bcrypt.compare(password, user.password);
+      if (!passwordValid) {
+        throw new NotAcceptableException('Invalid password');
+      }
+      return user;
+    } catch (error) {
+      throw new NotAcceptableException('Error validating user');
+    }
   }
 
   async login(user: {
@@ -38,7 +40,11 @@ export class AuthService {
     username: string;
     password: string;
   }): Promise<any> {
-    const payload = { sub: user.id, username: user.username };
-    return { access_token: this.jwtService.sign(payload) };
+    try {
+      const payload = { sub: user.id, username: user.username };
+      return { access_token: this.jwtService.sign(payload) };
+    } catch (error) {
+      throw new UnauthorizedException('Error during login');
+    }
   }
 }

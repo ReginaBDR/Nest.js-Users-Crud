@@ -20,10 +20,10 @@ export class Usuario {
   @Column({ length: 255 })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   profilePicture: string;
 
-  @Column()
+  @Column({ nullable: true })
   profileDescription: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

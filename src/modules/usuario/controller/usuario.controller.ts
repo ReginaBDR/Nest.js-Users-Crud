@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import { UsuarioService } from '../service/usuario.service';
 import { Usuario } from '../entities/usuario.entity';
@@ -19,8 +20,11 @@ import { JwtAuthGuard } from 'src/configuration/jwt-auth.guard';
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
+  private readonly logger = new Logger(UsuarioController.name);
+
   @Post()
   async createUser(@Body() createUserDto: CreateUsuarioDto) {
+    this.logger.log('Create user');
     return this.usuarioService.createUser(createUserDto);
   }
 
@@ -29,11 +33,13 @@ export class UsuarioController {
     @Query('limit') limit: number = 10,
     @Query('page') page: number = 1,
   ) {
+    this.logger.log('Get all users');
     return this.usuarioService.findAllUsers(limit, page);
   }
 
   @Get(':id')
   async getUserById(@Param('id') id: string) {
+    this.logger.log('Get user by id:', id);
     return this.usuarioService.findUserById(+id);
   }
 
@@ -42,11 +48,13 @@ export class UsuarioController {
     @Param('id') id: string,
     @Body() updateUserDto: Partial<Usuario>,
   ) {
+    this.logger.log('Update user with id:', id);
     return this.usuarioService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
+    this.logger.log('Delete user with id:', id);
     return this.usuarioService.deleteUser(+id);
   }
 }
