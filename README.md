@@ -33,6 +33,14 @@ Users Crud demo application developed with the [Nest](https://github.com/nestjs/
 $ docker-compose up -d --build
 ```
 
+## Additionally
+
+```bash
+# Import the Postman collection located on the root source file into Postman to test the API
+Usuarios-crud-collection.postman_collection.json
+```
+
+
 ## Running the app locally
 
 ```bash
