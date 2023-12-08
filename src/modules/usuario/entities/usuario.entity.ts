@@ -23,7 +23,7 @@ export class Usuario {
   @Column({ nullable: true })
   profilePicture: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 255 })
   profileDescription: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
