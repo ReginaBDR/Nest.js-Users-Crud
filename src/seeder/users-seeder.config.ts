@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { UsuarioService } from 'src/modules/usuario/service/usuario.service';
+import { UsuarioService } from '../modules/usuario/service/usuario.service';
 import * as bcrypt from 'bcrypt';
-import { CreateUsuarioDto } from 'src/modules/usuario/dto/createUsuario.dto';
+import { CreateUsuarioDto } from '../modules/usuario/dto/createUsuario.dto';
 
 @Injectable()
 export class UsersSeeder implements OnModuleInit {
@@ -33,10 +33,7 @@ export class UsersSeeder implements OnModuleInit {
         this.logger.log('Users already exist. Skipping mock user creation.');
       }
     } catch (error) {
-      this.logger.error(
-        `Error during mock user creation: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error('Error during mock user creation');
     }
   }
 }

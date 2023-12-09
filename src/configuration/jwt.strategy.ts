@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from './jwt-constants';
-import { UsuarioService } from 'src/modules/usuario/service/usuario.service';
-import { Usuario } from 'src/modules/usuario/entities/usuario.entity';
+import { UsuarioService } from '../modules/usuario/service/usuario.service';
+import { Usuario } from '../modules/usuario/entities/usuario.entity';
 
 interface Payload {
   sub: number;
