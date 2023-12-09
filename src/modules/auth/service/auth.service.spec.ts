@@ -1,10 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UsuarioService } from 'src/modules/usuario/service/usuario.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotAcceptableException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Usuario } from 'src/modules/usuario/entities/usuario.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
+import { UsuarioService } from '../../usuario/service/usuario.service';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+class MockRepository extends Repository<Usuario> {}
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -13,7 +17,15 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService, UsuarioService, JwtService],
+      providers: [
+        AuthService,
+        UsuarioService,
+        {
+          provide: getRepositoryToken(Usuario),
+          useClass: MockRepository,
+        },
+        JwtService,
+      ],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);

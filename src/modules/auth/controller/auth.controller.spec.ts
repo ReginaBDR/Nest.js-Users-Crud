@@ -1,7 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { LocalAuthGuard } from 'src/configuration/local-auth.guard';
 import { AuthService } from '../service/auth.service';
+import { LocalAuthGuard } from '../../../configuration/local-auth.guard';
+import { UsuarioService } from '../../usuario/service/usuario.service';
+import { JwtService } from '@nestjs/jwt';
+import { Repository } from 'typeorm';
+import { Usuario } from '../../usuario/entities/usuario.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+class MockRepository extends Repository<Usuario> {}
+class MockLocalAuthGuard {
+  canActivate = jest.fn(() => true);
+}
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -12,11 +22,15 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        UsuarioService,
+        JwtService,
         {
           provide: LocalAuthGuard,
-          useValue: {
-            canActivate: jest.fn().mockReturnValue(true),
-          },
+          useClass: MockLocalAuthGuard,
+        },
+        {
+          provide: getRepositoryToken(Usuario),
+          useClass: MockRepository,
         },
       ],
     }).compile();

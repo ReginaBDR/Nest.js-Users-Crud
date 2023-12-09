@@ -3,6 +3,14 @@ import { UsuarioController } from './usuario.controller';
 import { UsuarioService } from '../service/usuario.service';
 import { Usuario } from '../entities/usuario.entity';
 import { CreateUsuarioDto } from '../dto/createUsuario.dto';
+import { JwtAuthGuard } from '../../../configuration/jwt-auth.guard';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+class MockRepository extends Repository<Usuario> {}
+class MockJwtAuthGuard {
+  canActivate = jest.fn(() => true);
+}
 
 describe('UsuarioController', () => {
   let controller: UsuarioController;
@@ -11,7 +19,17 @@ describe('UsuarioController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsuarioController],
-      providers: [UsuarioService],
+      providers: [
+        UsuarioService,
+        {
+          provide: getRepositoryToken(Usuario),
+          useClass: MockRepository,
+        },
+        {
+          provide: JwtAuthGuard,
+          useClass: MockJwtAuthGuard,
+        },
+      ],
     }).compile();
 
     controller = module.get<UsuarioController>(UsuarioController);
@@ -179,7 +197,7 @@ describe('UsuarioController', () => {
 
       const response = await controller.deleteUser('1');
 
-      expect(response).toHaveProperty('statusCode', 204);
+      expect(response).toBeUndefined();
     });
 
     it('should handle deleting a non-existing user by returning null', async () => {
@@ -187,7 +205,7 @@ describe('UsuarioController', () => {
 
       const result = await controller.deleteUser('999');
 
-      expect(result).toHaveProperty('statusCode', 404);
+      expect(result).toBeNull();
     });
   });
 });
